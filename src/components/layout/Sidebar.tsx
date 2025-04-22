@@ -46,9 +46,9 @@ export function Sidebar() {
   return (
     <div className="flex flex-col h-full w-64 bg-security-950 text-white">
       <div className="p-4">
-        <h1 className="text-xl font-bold flex items-center">
+        <h1 className="text-xl font-bold flex items-center uppercase tracking-wide">
           <Shield className="mr-2 h-6 w-6" />
-          <span className="text-white">AI Security</span>
+          <span className="text-white">AI SECURITY</span>
         </h1>
       </div>
 

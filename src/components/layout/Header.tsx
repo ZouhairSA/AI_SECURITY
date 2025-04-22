@@ -22,8 +22,8 @@ export function Header({ userName }: HeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <div className="flex items-center">
-        <h1 className="font-bold text-xl text-security-800 hidden sm:block">
-          Guardian Eye Platform
+        <h1 className="font-bold text-xl text-security-800 hidden sm:block tracking-wide uppercase">
+          AI SECURITY
         </h1>
       </div>
 

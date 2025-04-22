@@ -62,11 +62,11 @@ export default function Login() {
           </div>
         </div>
         
-        <h1 className="text-3xl font-bold text-center text-white mb-2 font-sans">
-          Guardian Eye
+        <h1 className="text-3xl font-bold text-center text-white mb-2 font-sans tracking-wide uppercase">
+          AI SECURITY
         </h1>
         <p className="text-center text-gray-300 mb-8 max-w-xs mx-auto">
-          Système de surveillance intelligente propulsé par l'IA
+          Système de surveillance intelligente IA & Sécurité renforcée
         </p>
         
         <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-lg">
@@ -114,7 +114,7 @@ export default function Login() {
                     <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   </div>
                   <p className="text-xs text-gray-400 italic">
-                    Pour la démo : Tout mot de passe fonctionne avec admin@guardian-eye.com ou client@example.com
+                    Pour la démo : Tout mot de passe fonctionne avec admin@aisecurity.com ou client@example.com
                   </p>
                 </div>
               )}
@@ -163,7 +163,7 @@ export default function Login() {
         
         <div className="mt-8 text-center">
           <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} Guardian Eye Security. Tous droits réservés.
+            &copy; {new Date().getFullYear()} AI SECURITY. Tous droits réservés.
           </p>
         </div>
       </div>
