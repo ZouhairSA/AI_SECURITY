@@ -101,6 +101,12 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   
+  /* Direction RTL pour l'arabe */
+  .direction-rtl {
+    direction: rtl;
+    text-align: right;
+  }
+  
   /* Effet de glassmorphism pour les cartes */
   .glass-card {
     @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-xl;
@@ -144,4 +150,9 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.7);
+}
+
+/* Animation de transition pour le changement de thème */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

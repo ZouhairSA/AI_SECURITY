@@ -1,4 +1,6 @@
 
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +22,62 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "../hooks/use-toast";
+import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Schéma de validation du formulaire
+const userProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
+
+type UserProfileFormValues = z.infer<typeof userProfileSchema>;
 
 export default function Settings() {
   const { toast } = useToast();
+  const { t } = useThemeLanguage();
+  const { user } = useAuth();
+  const [isUpdating, setIsUpdating] = useState(false);
   
-  const handleSave = () => {
+  // Initialiser le formulaire avec les valeurs actuelles
+  const form = useForm<UserProfileFormValues>({
+    resolver: zodResolver(userProfileSchema),
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: "",
+      address: "",
+    },
+  });
+
+  const handleSave = (values: UserProfileFormValues) => {
+    setIsUpdating(true);
+    
+    // Simuler une requête API
+    setTimeout(() => {
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been updated successfully.",
+      });
+      setIsUpdating(false);
+    }, 1000);
+  };
+
+  const handleFormSubmit = form.handleSubmit(handleSave);
+  
+  const handleSaveSettings = () => {
     toast({
       title: "Settings saved",
       description: "Your changes have been saved successfully.",
@@ -35,48 +88,110 @@ export default function Settings() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("settings")}</h2>
           <p className="text-muted-foreground">
-            Manage your account and application preferences
+            {t("generalSettings")}
           </p>
         </div>
 
-        <Tabs defaultValue="general">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="detection">Detection</TabsTrigger>
+        <Tabs defaultValue="profile">
+          <TabsList className="grid w-full grid-cols-4 max-w-md">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="general">{t("generalSettings")}</TabsTrigger>
+            <TabsTrigger value="notifications">{t("notifications")}</TabsTrigger>
+            <TabsTrigger value="detection">{t("detection")}</TabsTrigger>
           </TabsList>
           
           <div className="mt-6">
+            {/* Profile Settings */}
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("profile")}</CardTitle>
+                  <CardDescription>
+                    Update your personal information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form onSubmit={handleFormSubmit} className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("fullName")}</FormLabel>
+                            <FormControl>
+                              <Input placeholder={t("fullName")} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("email")}</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="email@example.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone</FormLabel>
+                            <FormControl>
+                              <Input placeholder="+33 6 12 34 56 78" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Address</FormLabel>
+                            <FormControl>
+                              <Input placeholder="123 Main St, City" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button type="submit" disabled={isUpdating}>
+                        {isUpdating ? "Saving..." : t("save")}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
             {/* General Settings */}
             <TabsContent value="general">
               <Card>
                 <CardHeader>
-                  <CardTitle>General Settings</CardTitle>
+                  <CardTitle>{t("generalSettings")}</CardTitle>
                   <CardDescription>
                     Manage your basic account preferences
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Profile Information</h3>
-                    <div className="grid gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" placeholder="Your name" defaultValue="User Name" />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" placeholder="Your email" type="email" defaultValue="user@example.com" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Appearance</h3>
+                    <h3 className="text-lg font-medium">{t("appearance")}</h3>
                     <div className="grid gap-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
@@ -100,7 +215,7 @@ export default function Settings() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button onClick={handleSave}>Save Changes</Button>
+                  <Button onClick={handleSaveSettings}>{t("save")}</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -109,7 +224,7 @@ export default function Settings() {
             <TabsContent value="notifications">
               <Card>
                 <CardHeader>
-                  <CardTitle>Notification Settings</CardTitle>
+                  <CardTitle>{t("notifications")}</CardTitle>
                   <CardDescription>
                     Configure how and when you receive notifications
                   </CardDescription>
@@ -193,7 +308,7 @@ export default function Settings() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button onClick={handleSave}>Save Changes</Button>
+                  <Button onClick={handleSaveSettings}>{t("save")}</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -202,7 +317,7 @@ export default function Settings() {
             <TabsContent value="detection">
               <Card>
                 <CardHeader>
-                  <CardTitle>Detection Settings</CardTitle>
+                  <CardTitle>{t("detection")}</CardTitle>
                   <CardDescription>
                     Configure AI detection models and sensitivity
                   </CardDescription>
@@ -312,7 +427,7 @@ export default function Settings() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button onClick={handleSave}>Save Changes</Button>
+                  <Button onClick={handleSaveSettings}>{t("save")}</Button>
                 </CardFooter>
               </Card>
             </TabsContent>

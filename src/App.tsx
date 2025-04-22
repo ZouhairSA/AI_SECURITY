@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeLanguageProvider } from "./contexts/ThemeLanguageContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Pages
@@ -21,47 +22,49 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
-            
-            {/* Protected routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/cameras" element={
-              <ProtectedRoute>
-                <Cameras />
-              </ProtectedRoute>
-            } />
-            <Route path="/alerts" element={
-              <ProtectedRoute>
-                <Alerts />
-              </ProtectedRoute>
-            } />
-            <Route path="/users" element={
-              <ProtectedRoute requireAdmin>
-                <Users />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch-all route for 404s */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeLanguageProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/login" element={<Login />} />
+              
+              {/* Protected routes */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/cameras" element={
+                <ProtectedRoute>
+                  <Cameras />
+                </ProtectedRoute>
+              } />
+              <Route path="/alerts" element={
+                <ProtectedRoute>
+                  <Alerts />
+                </ProtectedRoute>
+              } />
+              <Route path="/users" element={
+                <ProtectedRoute requireAdmin>
+                  <Users />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              
+              {/* Catch-all route for 404s */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeLanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

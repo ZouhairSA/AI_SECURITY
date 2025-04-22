@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Search, User } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
+import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
 
 // Mock users for display
 const mockUsers = [
@@ -41,6 +42,7 @@ const mockUsers = [
 
 export default function Users() {
   const { toast } = useToast();
+  const { t } = useThemeLanguage();
 
   const handleAddUser = () => {
     toast({
@@ -68,39 +70,39 @@ export default function Users() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Users</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{t("users")}</h2>
             <p className="text-muted-foreground">
-              Manage user accounts and permissions
+              {t("userManagement")}
             </p>
           </div>
           
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-security-800 hover:bg-security-700">
-                <Plus className="mr-2 h-4 w-4" /> Add User
+                <Plus className="mr-2 h-4 w-4" /> {t("addUser")}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add New User</DialogTitle>
+                <DialogTitle>{t("addUser")}</DialogTitle>
                 <DialogDescription>
-                  Create a new user and assign cameras for monitoring
+                  {t("userManagement")}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="User's full name" />
+                  <Label htmlFor="name">{t("fullName")}</Label>
+                  <Input id="name" placeholder={t("fullName")} />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("email")}</Label>
                   <Input id="email" type="email" placeholder="user@example.com" />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="role">{t("role")}</Label>
                   <Select>
                     <SelectTrigger id="role">
-                      <SelectValue placeholder="Select role" />
+                      <SelectValue placeholder={t("role")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="admin">Administrator</SelectItem>
@@ -114,7 +116,7 @@ export default function Users() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={handleAddUser}>Add User</Button>
+                <Button type="submit" onClick={handleAddUser}>{t("addUser")}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -124,25 +126,25 @@ export default function Users() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             type="search"
-            placeholder="Search users..."
+            placeholder={t("searchUsers")}
             className="pl-8"
           />
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>User Management</CardTitle>
+            <CardTitle>{t("userManagement")}</CardTitle>
             <CardDescription>
-              View and manage system users
+              {t("userManagement")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
               <div className="grid grid-cols-5 p-4 bg-muted/50 font-medium">
-                <div className="col-span-2">User</div>
-                <div>Role</div>
-                <div>Assigned Cameras</div>
-                <div className="text-right">Actions</div>
+                <div className="col-span-2">{t("user")}</div>
+                <div>{t("role")}</div>
+                <div>{t("assignedCameras")}</div>
+                <div className="text-right">{t("actions")}</div>
               </div>
               
               {mockUsers.map((user) => (
@@ -171,26 +173,26 @@ export default function Users() {
                   <div className="flex justify-end space-x-2">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">Edit</Button>
+                        <Button variant="outline" size="sm">{t("edit")}</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Edit User</DialogTitle>
+                          <DialogTitle>{t("editUser")}</DialogTitle>
                           <DialogDescription>
-                            Update user information and camera assignments
+                            {t("userManagement")}
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                           <div className="grid gap-2">
-                            <Label htmlFor="edit-name">Full Name</Label>
+                            <Label htmlFor="edit-name">{t("fullName")}</Label>
                             <Input id="edit-name" defaultValue={user.name} />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="edit-email">Email</Label>
+                            <Label htmlFor="edit-email">{t("email")}</Label>
                             <Input id="edit-email" type="email" defaultValue={user.email} />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="edit-role">Role</Label>
+                            <Label htmlFor="edit-role">{t("role")}</Label>
                             <Select defaultValue={user.role}>
                               <SelectTrigger id="edit-role">
                                 <SelectValue />
@@ -203,7 +205,7 @@ export default function Users() {
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit" onClick={handleUpdateUser}>Save Changes</Button>
+                          <Button type="submit" onClick={handleUpdateUser}>{t("save")}</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -213,7 +215,7 @@ export default function Users() {
                       size="sm"
                       onClick={() => handleDeleteUser(user.id)}
                     >
-                      Delete
+                      {t("delete")}
                     </Button>
                   </div>
                 </div>
