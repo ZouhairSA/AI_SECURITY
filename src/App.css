@@ -1,42 +1,117 @@
+
+/* Styles principaux de l'application */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
   text-align: center;
 }
 
+/* Animations et transitions */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Logo animation */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 1em rgba(3, 105, 161, 0.6));
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.logo.security:hover {
+  filter: drop-shadow(0 0 1em rgba(6, 60, 134, 0.7));
+}
+
+/* Effet de glassmorphisme */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Cards et conteneurs */
+.security-container {
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, #0b2d48, #0a263d);
+  box-shadow: 8px 8px 16px #081b2a, -8px -8px 16px #0d3762;
+}
+
+/* Card de statistiques */
+.stat-card {
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, #0d3559, #0b2e4b);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation spéciale pour les alertes */
+@keyframes alertPulse {
+  0%, 100% {
+    background-color: rgba(239, 68, 68, 0.7);
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    background-color: rgba(239, 68, 68, 0.9);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.alert-pulse {
+  animation: alertPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.card {
-  padding: 2em;
+/* Amélioration des formulaires */
+input.security-input, select.security-input, textarea.security-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+input.security-input:focus, select.security-input:focus, textarea.security-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Effet de survol sur les boutons */
+.hover-glow:hover {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
 }

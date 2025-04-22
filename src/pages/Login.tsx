@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Shield, Lock } from "lucide-react";
+import { Shield, Lock, ArrowRight, ChevronLeft } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { toast } from "sonner";
 
@@ -51,91 +51,121 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-security-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-security-950 to-security-800 p-4">
       <div className="max-w-md w-full">
         <div className="flex justify-center mb-6">
-          <div className="bg-white p-3 rounded-full">
-            <Shield className="h-12 w-12 text-security-800" />
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-security-500 to-security-300 rounded-full blur opacity-70"></div>
+            <div className="bg-security-900 p-4 rounded-full relative">
+              <Shield className="h-14 w-14 text-security-300" />
+            </div>
           </div>
         </div>
         
-        <h1 className="text-2xl font-bold text-center text-white mb-2">
-          Guardian Eye Platform
+        <h1 className="text-3xl font-bold text-center text-white mb-2 font-sans">
+          Guardian Eye
         </h1>
-        <p className="text-center text-gray-400 mb-8">
-          Advanced AI-powered security monitoring
+        <p className="text-center text-gray-300 mb-8 max-w-xs mx-auto">
+          Système de surveillance intelligente propulsé par l'IA
         </p>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>{isPasswordReset ? "Réinitialiser le mot de passe" : "Sign In"}</CardTitle>
-            <CardDescription>
+        <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-lg">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white text-xl">
+              {isPasswordReset ? "Réinitialiser le mot de passe" : "Connexion Sécurisée"}
+            </CardTitle>
+            <CardDescription className="text-gray-300">
               {isPasswordReset 
                 ? "Entrez votre email pour recevoir un lien de réinitialisation" 
-                : "Enter your credentials to access your account"}
+                : "Entrez vos identifiants pour accéder à votre compte"}
             </CardDescription>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5 pb-3">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@guardian-eye.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                <Label htmlFor="email" className="text-gray-200">Email</Label>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-white/20 border-security-600/30 text-white placeholder:text-gray-400 focus-visible:ring-security-400 pr-10"
+                  />
+                </div>
               </div>
               
               {!isPasswordReset && (
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
+                  <Label htmlFor="password" className="text-gray-200">Mot de passe</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="bg-white/20 border-security-600/30 text-white placeholder:text-gray-400 focus-visible:ring-security-400 pr-10"
+                    />
+                    <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  </div>
+                  <p className="text-xs text-gray-400 italic">
                     Pour la démo : Tout mot de passe fonctionne avec admin@guardian-eye.com ou client@example.com
                   </p>
                 </div>
               )}
             </CardContent>
             
-            <CardFooter className="flex flex-col space-y-2">
+            <CardFooter className="flex flex-col space-y-3 pt-2">
               <Button 
                 type="submit" 
-                className="w-full bg-security-800 hover:bg-security-700"
+                className="w-full bg-gradient-to-r from-security-600 to-security-500 hover:from-security-500 hover:to-security-400 text-white border-0"
                 disabled={isSubmitting}
               >
-                {isSubmitting 
-                  ? (isPasswordReset ? "Envoi en cours..." : "Connexion...") 
-                  : (isPasswordReset ? "Envoyer" : "Sign In")}
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {isPasswordReset ? "Envoi en cours..." : "Connexion..."}
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    {isPasswordReset ? "Envoyer le lien" : "Se connecter"}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
+                )}
               </Button>
               
               <Button 
                 type="button"
                 variant="ghost"
-                className="w-full mt-2"
+                className="w-full text-gray-300 hover:text-white hover:bg-white/10"
                 onClick={togglePasswordReset}
               >
-                {isPasswordReset 
-                  ? "Retour à la connexion" 
-                  : "Mot de passe oublié ?"}
+                {isPasswordReset ? (
+                  <span className="flex items-center">
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Retour à la connexion
+                  </span>
+                ) : (
+                  "Mot de passe oublié ?"
+                )}
               </Button>
             </CardFooter>
           </form>
         </Card>
         
-        <p className="text-center text-gray-400 mt-6 text-sm">
-          &copy; {new Date().getFullYear()} Guardian Eye Security. All rights reserved.
-        </p>
+        <div className="mt-8 text-center">
+          <p className="text-gray-400 text-sm">
+            &copy; {new Date().getFullYear()} Guardian Eye Security. Tous droits réservés.
+          </p>
+        </div>
       </div>
     </div>
   );
