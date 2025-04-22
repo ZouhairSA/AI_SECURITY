@@ -1,8 +1,15 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getCurrentUser, isAuthenticated, loginUser, logoutUser, User } from "../lib/auth";
+import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'client';
+}
 
 interface AuthContextType {
   user: User | null;
@@ -20,55 +27,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if user is already logged in when the app loads
+  // Récupère l'utilisateur connecté et le profil Supabase
   useEffect(() => {
-    const checkAuth = () => {
-      if (isAuthenticated()) {
-        setUser(getCurrentUser());
+    const getUser = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        setUser(null);
+        setLoading(false);
+        return;
       }
+      // Cherche le profil correspondant dans la table users
+      const { data: profiles } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      if (profiles) setUser(profiles as User);
       setLoading(false);
     };
-    checkAuth();
+    getUser();
+    // Ecoute les changements d'auth (connexion/déconnexion)
+    const { data: sub } = supabase.auth.onAuthStateChange(() => getUser());
+    return () => {
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
-    try {
-      const user = await loginUser(email, password);
-      if (user) {
-        setUser(user);
-        toast({
-          title: "Login successful",
-          description: `Welcome back, ${user.name}!`,
-        });
-        return true;
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password",
-          variant: "destructive",
-        });
-        return false;
-      }
-    } catch (error) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) {
       toast({
-        title: "Login error",
-        description: "An unexpected error occurred",
+        title: "Échec de connexion",
+        description: "Email ou mot de passe incorrect.",
         variant: "destructive",
       });
-      return false;
-    } finally {
       setLoading(false);
+      return false;
     }
+    // Cherche le profil correspondant dans la table users
+    const { data: profiles } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+    if (profiles) {
+      setUser(profiles as User);
+      toast({
+        title: "Bienvenue",
+        description: `Bonjour ${profiles.name ?? profiles.email}`,
+      });
+      setLoading(false);
+      return true;
+    }
+    toast({
+      title: "Profil manquant",
+      description: "Aucun profil trouvé.",
+      variant: "destructive",
+    });
+    setLoading(false);
+    return false;
   };
 
-  const logout = () => {
-    logoutUser();
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     navigate("/login");
     toast({
-      title: "Logged out",
-      description: "You have been logged out successfully",
+      title: "Déconnexion",
+      description: "Vous avez été déconnecté.",
     });
   };
 
