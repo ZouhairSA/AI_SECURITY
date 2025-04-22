@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Cameras from "./pages/Cameras";
+import CameraDetail from "./pages/CameraDetail"; // Importation de la nouvelle page
 import Alerts from "./pages/Alerts";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
@@ -41,6 +42,11 @@ const App = () => (
               <Route path="/cameras" element={
                 <ProtectedRoute>
                   <Cameras />
+                </ProtectedRoute>
+              } />
+              <Route path="/camera/:id" element={
+                <ProtectedRoute>
+                  <CameraDetail />
                 </ProtectedRoute>
               } />
               <Route path="/alerts" element={

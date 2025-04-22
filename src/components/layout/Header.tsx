@@ -1,4 +1,3 @@
-
 import { Bell, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +13,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ThemeLanguageSwitcher } from "../ThemeLanguageSwitcher";
 import { useThemeLanguage } from "../../contexts/ThemeLanguageContext";
 import { useNavigate } from "react-router-dom";
+import { AppLogo } from "../AppLogo";
 
 interface HeaderProps {
   userName: string;

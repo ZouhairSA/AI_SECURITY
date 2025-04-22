@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -13,6 +12,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useThemeLanguage } from "../../contexts/ThemeLanguageContext";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
+import { LogoutConfirmDialog } from "../LogoutConfirmDialog";
 
 interface SidebarItemProps {
   icon: ReactNode;
@@ -40,7 +42,7 @@ function SidebarItem({ icon, href, title, active }: SidebarItemProps) {
 
 export function Sidebar() {
   const location = useLocation();
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, user } = useAuth();
   const { t } = useThemeLanguage();
 
   const isActive = (path: string) => location.pathname === path;
@@ -93,14 +95,34 @@ export function Sidebar() {
         />
       </nav>
 
-      <div className="p-4 border-t border-security-800">
-        <button
-          onClick={logout}
-          className="flex w-full items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-security-800 hover:text-white transition-colors"
-        >
-          <LogOut className="mr-3 h-5 w-5" />
-          <span>{t("logout")}</span>
-        </button>
+      <div className="mt-auto pt-4 border-t border-border/40">
+        <div className="px-3 py-2">
+          <div className="flex items-center mb-4">
+            <Avatar>
+              <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
+            </Avatar>
+            <div className="ml-3">
+              <p className="text-sm font-medium leading-none">{user?.name}</p>
+              <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
+            </div>
+          </div>
+          
+          <nav className="space-y-1">
+            <Link
+              to="/settings"
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "w-full justify-start px-2",
+                pathname === "/settings" && "bg-accent text-accent-foreground"
+              )}
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              <span>{t("settings")}</span>
+            </Link>
+            
+            <LogoutConfirmDialog />
+          </nav>
+        </div>
       </div>
     </div>
   );

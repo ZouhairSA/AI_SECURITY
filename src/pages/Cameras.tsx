@@ -17,6 +17,8 @@ import { Camera, getCameras } from "@/lib/camera-service";
 import { AlertCircle, Camera as CameraIcon, Plus } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
+import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
 
 const statusColors: Record<string, string> = {
   online: "bg-green-500",
@@ -30,6 +32,7 @@ export default function Cameras() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const { t } = useThemeLanguage();
 
   useEffect(() => {
     const loadCameras = async () => {
@@ -38,8 +41,8 @@ export default function Cameras() {
         setCameras(data);
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to load cameras",
+          title: t("error"),
+          description: t("failedToLoadCameras"),
           variant: "destructive",
         });
       } finally {
@@ -48,7 +51,7 @@ export default function Cameras() {
     };
 
     loadCameras();
-  }, [toast]);
+  }, [toast, t]);
 
   const filteredCameras = cameras.filter((camera) => {
     // Apply status filter
@@ -73,31 +76,31 @@ export default function Cameras() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Cameras</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{t("cameras")}</h2>
             <p className="text-muted-foreground">
-              Manage and monitor your security cameras
+              {t("camerasDescription")}
             </p>
           </div>
           <Button className="bg-security-800 hover:bg-security-700">
-            <Plus className="mr-2 h-4 w-4" /> Add Camera
+            <Plus className="mr-2 h-4 w-4" /> {t("addCamera")}
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex items-center space-x-2">
-            <Label htmlFor="status-filter" className="shrink-0">Status:</Label>
+            <Label htmlFor="status-filter" className="shrink-0">{t("status")}:</Label>
             <Select
               value={filter}
               onValueChange={setFilter}
             >
               <SelectTrigger id="status-filter" className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t("filterByStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="online">Online</SelectItem>
-                <SelectItem value="offline">Offline</SelectItem>
-                <SelectItem value="warning">Warning</SelectItem>
+                <SelectItem value="all">{t("allStatuses")}</SelectItem>
+                <SelectItem value="online">{t("online")}</SelectItem>
+                <SelectItem value="offline">{t("offline")}</SelectItem>
+                <SelectItem value="warning">{t("warning")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -106,7 +109,7 @@ export default function Cameras() {
             <CameraIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
-              placeholder="Search cameras..."
+              placeholder={t("searchCameras")}
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -116,8 +119,8 @@ export default function Cameras() {
 
         <Tabs defaultValue="grid" className="w-full">
           <TabsList className="mb-4">
-            <TabsTrigger value="grid">Grid View</TabsTrigger>
-            <TabsTrigger value="list">List View</TabsTrigger>
+            <TabsTrigger value="grid">{t("gridView")}</TabsTrigger>
+            <TabsTrigger value="list">{t("listView")}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="grid" className="space-y-4">
@@ -153,15 +156,21 @@ export default function Cameras() {
                             <div className="px-3 py-1 rounded bg-red-500 text-white animate-pulse-alert flex items-center space-x-1">
                               <AlertCircle className="h-4 w-4" />
                               <span className="font-medium">
-                                {camera.lastAlert.type.charAt(0).toUpperCase() + camera.lastAlert.type.slice(1)} Detected
+                                {camera.lastAlert.type.charAt(0).toUpperCase() + camera.lastAlert.type.slice(1)} {t("detected")}
                               </span>
                             </div>
                           </div>
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <Button size="sm" variant="outline">Configure</Button>
-                        <Button size="sm">View Feed</Button>
+                        <Button size="sm" variant="outline">{t("configure")}</Button>
+                        <Button 
+                          size="sm"
+                          as={Link} 
+                          to={`/camera/${camera.id}`}
+                        >
+                          {t("viewFeed")}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -170,11 +179,11 @@ export default function Cameras() {
             ) : (
               <div className="text-center py-10 bg-gray-50 rounded-md">
                 <CameraIcon className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-lg font-medium text-gray-900">No cameras found</h3>
+                <h3 className="mt-2 text-lg font-medium text-gray-900">{t("noCamerasFound")}</h3>
                 <p className="mt-1 text-gray-500">
                   {searchTerm || filter !== "all" 
-                    ? "Try adjusting your search filters" 
-                    : "Add cameras to start monitoring"}
+                    ? t("adjustFilters") 
+                    : t("addCamerasToStart")}
                 </p>
               </div>
             )}
@@ -183,16 +192,16 @@ export default function Cameras() {
           <TabsContent value="list">
             <div className="rounded-md border">
               <div className="grid grid-cols-6 p-4 bg-muted/50 font-medium">
-                <div className="col-span-2">Camera</div>
-                <div>Location</div>
-                <div className="text-center">Status</div>
-                <div className="text-center">Last Alert</div>
+                <div className="col-span-2">{t("camera")}</div>
+                <div>{t("location")}</div>
+                <div className="text-center">{t("status")}</div>
+                <div className="text-center">{t("lastAlert")}</div>
                 <div></div>
               </div>
               
               {filteredCameras.length === 0 ? (
                 <div className="p-4 text-center text-muted-foreground">
-                  No cameras match your filters
+                  {t("noCamerasMatchFilters")}
                 </div>
               ) : (
                 filteredCameras.map((camera) => (
@@ -218,11 +227,17 @@ export default function Cameras() {
                           {new Date(camera.lastAlert.timestamp).toLocaleTimeString()}
                         </span>
                       ) : (
-                        <span className="text-sm text-gray-400">None</span>
+                        <span className="text-sm text-gray-400">{t("none")}</span>
                       )}
                     </div>
                     <div className="text-right">
-                      <Button size="sm">View</Button>
+                      <Button 
+                        size="sm"
+                        as={Link} 
+                        to={`/camera/${camera.id}`}
+                      >
+                        {t("view")}
+                      </Button>
                     </div>
                   </div>
                 ))
