@@ -1,15 +1,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'admin' | 'client';
-}
+import { loginUser, logoutUser, getCurrentUser, User } from "../lib/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -27,71 +20,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Récupère l'utilisateur connecté et le profil Supabase
+  // Check for existing user session on mount
   useEffect(() => {
-    const getUser = async () => {
+    const checkUser = () => {
       setLoading(true);
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-      // Cherche le profil correspondant dans la table users
-      const { data: profiles } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      if (profiles) setUser(profiles as User);
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
       setLoading(false);
     };
-    getUser();
-    // Ecoute les changements d'auth (connexion/déconnexion)
-    const { data: sub } = supabase.auth.onAuthStateChange(() => getUser());
-    return () => {
-      sub.subscription.unsubscribe();
-    };
+
+    checkUser();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data.user) {
+    try {
+      const user = await loginUser(email, password);
+      
+      if (user) {
+        setUser(user);
+        toast({
+          title: "Bienvenue",
+          description: `Bonjour ${user.name || user.email}`,
+        });
+        setLoading(false);
+        return true;
+      } else {
+        toast({
+          title: "Échec de connexion",
+          description: "Email ou mot de passe incorrect.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error("Erreur de connexion:", error);
       toast({
-        title: "Échec de connexion",
-        description: "Email ou mot de passe incorrect.",
+        title: "Erreur de connexion",
+        description: "Une erreur s'est produite lors de la connexion.",
         variant: "destructive",
       });
       setLoading(false);
       return false;
     }
-    // Cherche le profil correspondant dans la table users
-    const { data: profiles } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
-    if (profiles) {
-      setUser(profiles as User);
-      toast({
-        title: "Bienvenue",
-        description: `Bonjour ${profiles.name ?? profiles.email}`,
-      });
-      setLoading(false);
-      return true;
-    }
-    toast({
-      title: "Profil manquant",
-      description: "Aucun profil trouvé.",
-      variant: "destructive",
-    });
-    setLoading(false);
-    return false;
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const logout = () => {
+    logoutUser();
     setUser(null);
     navigate("/login");
     toast({

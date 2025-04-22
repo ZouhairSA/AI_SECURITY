@@ -15,7 +15,7 @@ const USERS: User[] = [
   { 
     id: '1', 
     name: 'Admin User', 
-    email: 'admin@guardian-eye.com', 
+    email: 'admin@aisecurity.com', 
     role: 'admin' 
   },
   { 
@@ -31,7 +31,7 @@ export function loginUser(email: string, password: string): Promise<User | null>
   return new Promise((resolve) => {
     // Simulate API request delay
     setTimeout(() => {
-      const user = USERS.find(u => u.email === email);
+      const user = USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
       
       // In this demo, any password works for existing users
       if (user) {
