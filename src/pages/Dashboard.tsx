@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,6 +89,20 @@ export default function Dashboard() {
     { name: "Week 4", time: 3.2 },
   ];
 
+  // Analytics supplémentaires pour admin
+  const adminBarData = [
+    { mois: "Jan", utilisateurs: 2, clients: 3 },
+    { mois: "Fév", utilisateurs: 2, clients: 3 },
+    { mois: "Mar", utilisateurs: 3, clients: 4 },
+    { mois: "Avr", utilisateurs: 4, clients: 4 },
+  ];
+  const adminLineData = [
+    { semaine: "S1", connexions: 11 },
+    { semaine: "S2", connexions: 14 },
+    { semaine: "S3", connexions: 18 },
+    { semaine: "S4", connexions: 12 },
+  ];
+
   return (
     <AppLayout>
       {loading ? (
@@ -98,45 +111,45 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Tableau de bord</h2>
           
-          {/* Status Cards */}
+          {/* Cartes d’état */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Cameras</CardTitle>
+                <CardTitle className="text-sm font-medium">Nombre de caméras</CardTitle>
                 <CameraIcon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{cameras.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  {cameras.filter(c => c.status === "online").length} online
+                  {cameras.filter(c => c.status === "online").length} en ligne
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+                <CardTitle className="text-sm font-medium">Alertes actives</CardTitle>
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{activeAlerts}</div>
                 <p className="text-xs text-muted-foreground">
-                  Requiring attention
+                  Requérant une attention
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Detection Accuracy</CardTitle>
+                <CardTitle className="text-sm font-medium">Précision de détection</CardTitle>
                 <Eye className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">98%</div>
                 <p className="text-xs text-muted-foreground">
-                  Last 30 days
+                  30 derniers jours
                 </p>
               </CardContent>
             </Card>
@@ -144,7 +157,7 @@ export default function Dashboard() {
             {isAdmin && (
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                  <CardTitle className="text-sm font-medium">Nombre d’utilisateurs</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -157,8 +170,8 @@ export default function Dashboard() {
             )}
           </div>
           
-          {/* Camera Status Section */}
-          <h3 className="text-lg font-semibold mt-6">Camera Status</h3>
+          {/* Section État des caméras */}
+          <h3 className="text-lg font-semibold mt-6">État des caméras</h3>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {cameras.map((camera) => (
               <Card key={camera.id} className={camera.lastAlert ? "border-l-4 border-l-danger-600" : ""}>
@@ -200,8 +213,8 @@ export default function Dashboard() {
             ))}
           </div>
           
-          {/* Analytics Section */}
-          <h3 className="text-lg font-semibold mt-6">Analytics</h3>
+          {/* Section Analyses */}
+          <h3 className="text-lg font-semibold mt-6">Analyses</h3>
           <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -288,6 +301,55 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {isAdmin && (
+            <div>
+              <h3 className="text-lg font-semibold mt-8">Statistiques administrateur</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                {/* Graphique à barres : utilisateurs vs clients */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-md">Évolution des utilisateurs et clients</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={adminBarData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="mois" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="utilisateurs" name="Utilisateurs" fill="#8B5CF6" />
+                          <Bar dataKey="clients" name="Clients" fill="#0EA5E9" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* Graphique en ligne : connexions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-md">Connexions (par semaine)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={adminLineData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="semaine" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line dataKey="connexions" name="Connexions" stroke="#F59E0B" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </AppLayout>
