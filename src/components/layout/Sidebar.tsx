@@ -47,7 +47,6 @@ export function Sidebar() {
   const { t } = useThemeLanguage();
 
   const isActive = (path: string) => location.pathname === path;
-  const pathname = location.pathname; // Added this line to define pathname
 
   return (
     <div className="flex flex-col h-full w-64 bg-security-950 text-white">
@@ -115,7 +114,7 @@ export function Sidebar() {
               className={cn(
                 buttonVariants({ variant: "ghost" }),
                 "w-full justify-start px-2",
-                pathname === "/settings" && "bg-accent text-accent-foreground"
+                location.pathname === "/settings" && "bg-accent text-accent-foreground"
               )}
             >
               <Settings className="mr-2 h-4 w-4" />

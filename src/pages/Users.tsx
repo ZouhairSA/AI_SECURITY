@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,8 +32,15 @@ import { Plus, Search, User } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
 
-// Mock users for display
-const mockUsers = [
+type UserType = {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "client";
+  cameras: string[];
+};
+
+const initialUsers: UserType[] = [
   { id: "1", name: "Admin User", email: "admin@guardian-eye.com", role: "admin", cameras: [] },
   { id: "2", name: "Client Demo", email: "client@example.com", role: "client", cameras: ["Main Entrance", "Parking Lot"] },
   { id: "3", name: "Building Manager", email: "manager@example.org", role: "client", cameras: ["Server Room", "Main Entrance"] },
@@ -40,30 +48,88 @@ const mockUsers = [
   { id: "5", name: "System Admin", email: "sysadmin@guardian-eye.com", role: "admin", cameras: [] },
 ];
 
+// Utility for generating a unique user ID
+const generateId = () => Math.random().toString(36).substr(2, 9);
+
 export default function Users() {
   const { toast } = useToast();
   const { t } = useThemeLanguage();
 
+  const [users, setUsers] = useState<UserType[]>(initialUsers);
+  const [searchValue, setSearchValue] = useState("");
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editUser, setEditUser] = useState<UserType | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  // Add user - form states
+  const [addName, setAddName] = useState("");
+  const [addEmail, setAddEmail] = useState("");
+  const [addRole, setAddRole] = useState<"admin" | "client" | "">("");
+  const [addPassword, setAddPassword] = useState("");
+
+  // Handle add user
   const handleAddUser = () => {
+    if (!addName || !addEmail || !addRole) {
+      toast({ title: "Error", description: "Please fill all fields", variant: "destructive" });
+      return;
+    }
+    const newUser: UserType = {
+      id: generateId(),
+      name: addName,
+      email: addEmail,
+      role: addRole,
+      cameras: [],
+    };
+    setUsers([...users, newUser]);
+    setAddDialogOpen(false);
+    // Clear form
+    setAddName("");
+    setAddEmail("");
+    setAddRole("");
+    setAddPassword("");
     toast({
       title: "User added",
       description: "New user has been created successfully",
     });
   };
 
+  // Edit logic
+  const handleEditUserOpen = (user: UserType) => {
+    setEditUser(user);
+    setEditDialogOpen(true);
+  };
+
   const handleUpdateUser = () => {
+    if (!editUser) return;
+    setUsers(users =>
+      users.map(u =>
+        u.id === editUser.id
+          ? { ...u, name: editUser.name, email: editUser.email, role: editUser.role }
+          : u
+      )
+    );
+    setEditDialogOpen(false);
+    setEditUser(null);
     toast({
       title: "User updated",
       description: "User information has been updated",
     });
   };
 
+  // Delete
   const handleDeleteUser = (userId: string) => {
+    setUsers(users => users.filter(u => u.id !== userId));
     toast({
       title: "User deleted",
       description: "User has been removed from the system",
     });
   };
+
+  // Search UX
+  const filteredUsers = users.filter(u =>
+    u.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   return (
     <AppLayout>
@@ -76,7 +142,7 @@ export default function Users() {
             </p>
           </div>
           
-          <Dialog>
+          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-security-800 hover:bg-security-700">
                 <Plus className="mr-2 h-4 w-4" /> {t("addUser")}
@@ -92,15 +158,15 @@ export default function Users() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">{t("fullName")}</Label>
-                  <Input id="name" placeholder={t("fullName")} />
+                  <Input id="name" placeholder={t("fullName")} value={addName} onChange={e => setAddName(e.target.value)} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">{t("email")}</Label>
-                  <Input id="email" type="email" placeholder="user@example.com" />
+                  <Input id="email" type="email" placeholder="user@example.com" value={addEmail} onChange={e => setAddEmail(e.target.value)} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="role">{t("role")}</Label>
-                  <Select>
+                  <Select value={addRole} onValueChange={(value) => setAddRole(value as "admin" | "client")}>
                     <SelectTrigger id="role">
                       <SelectValue placeholder={t("role")} />
                     </SelectTrigger>
@@ -112,11 +178,11 @@ export default function Users() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password">Initial Password</Label>
-                  <Input id="password" type="password" />
+                  <Input id="password" type="password" value={addPassword} onChange={e => setAddPassword(e.target.value)} />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={handleAddUser}>{t("addUser")}</Button>
+                <Button type="button" onClick={handleAddUser}>{t("addUser")}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -128,6 +194,8 @@ export default function Users() {
             type="search"
             placeholder={t("searchUsers")}
             className="pl-8"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
 
@@ -147,7 +215,7 @@ export default function Users() {
                 <div className="text-right">{t("actions")}</div>
               </div>
               
-              {mockUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <div key={user.id} className="grid grid-cols-5 p-4 items-center border-t">
                   <div className="col-span-2 flex items-center">
                     <div className="h-9 w-9 bg-gray-100 rounded-full flex items-center justify-center mr-3">
@@ -171,9 +239,12 @@ export default function Users() {
                     )}
                   </div>
                   <div className="flex justify-end space-x-2">
-                    <Dialog>
+                    <Dialog open={editDialogOpen && editUser?.id === user.id} onOpenChange={(open) => {
+                      setEditDialogOpen(open);
+                      if (!open) setEditUser(null);
+                    }}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">{t("edit")}</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleEditUserOpen(user)}>{t("edit")}</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -185,15 +256,15 @@ export default function Users() {
                         <div className="grid gap-4 py-4">
                           <div className="grid gap-2">
                             <Label htmlFor="edit-name">{t("fullName")}</Label>
-                            <Input id="edit-name" defaultValue={user.name} />
+                            <Input id="edit-name" value={editUser?.name || ""} onChange={e => setEditUser(editUser ? { ...editUser, name: e.target.value } : null)} />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="edit-email">{t("email")}</Label>
-                            <Input id="edit-email" type="email" defaultValue={user.email} />
+                            <Input id="edit-email" type="email" value={editUser?.email || ""} onChange={e => setEditUser(editUser ? { ...editUser, email: e.target.value } : null)} />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="edit-role">{t("role")}</Label>
-                            <Select defaultValue={user.role}>
+                            <Select value={editUser?.role || "client"} onValueChange={(value) => setEditUser(editUser ? { ...editUser, role: value as "admin" | "client" } : null)}>
                               <SelectTrigger id="edit-role">
                                 <SelectValue />
                               </SelectTrigger>
@@ -205,7 +276,7 @@ export default function Users() {
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit" onClick={handleUpdateUser}>{t("save")}</Button>
+                          <Button type="button" onClick={handleUpdateUser}>{t("save")}</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
