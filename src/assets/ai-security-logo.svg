@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond du bouclier -->
+  <path d="M256 32L32 144V288C32 398.9 123.5 496.3 256 512C388.5 496.3 480 398.9 480 288V144L256 32Z" fill="#004AAD"/>
+  
+  <!-- Cercle intérieur -->
+  <circle cx="256" cy="256" r="160" fill="#FFFFFF"/>
+  
+  <!-- Œil stylisé -->
+  <path d="M256 160C192 160 135.3 192 96 240C135.3 288 192 320 256 320C320 320 376.7 288 416 240C376.7 192 320 160 256 160ZM256 288C238.3 288 221.3 281.1 208.6 268.4C195.9 255.7 189 238.7 189 221C189 203.3 195.9 186.3 208.6 173.6C221.3 160.9 238.3 154 256 154C273.7 154 290.7 160.9 303.4 173.6C316.1 186.3 323 203.3 323 221C323 238.7 316.1 255.7 303.4 268.4C290.7 281.1 273.7 288 256 288Z" fill="#004AAD"/>
+  
+  <!-- Pupille -->
+  <circle cx="256" cy="221" r="32" fill="#004AAD"/>
+  
+  <!-- Circuit imprimé stylisé -->
+  <path d="M144 368H368M256 368V448M192 408H320" stroke="#004AAD" stroke-width="16" stroke-linecap="round"/>
+</svg> 

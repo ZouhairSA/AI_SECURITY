@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,9 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { AlertCircle } from "lucide-react";
 import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
 import { ThemeLanguageSwitcher } from "../components/ThemeLanguageSwitcher";
+
+// Importez l'image directement
+import aiSecurityLogo from "../assets/ai-security-logo.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -35,8 +37,18 @@ export default function Login() {
       <Card className={`w-full max-w-md shadow-lg animate-fade-in ${isRtl ? "text-right" : ""}`}>
         <CardHeader className="space-y-2">
           <div className={`flex items-center ${isRtl ? "justify-end" : "justify-center"}`}>
-            <img src="/placeholder.svg" alt="AI SECURITY" className={`h-10 w-10 ${isRtl ? "ml-3" : "mr-3"}`} />
-            <CardTitle className="text-2xl font-bold text-security-800 dark:text-security-200">AI SECURITY</CardTitle>
+            <img 
+              src={aiSecurityLogo} 
+              alt="AI SECURITY" 
+              className={`h-16 w-16 ${isRtl ? "ml-3" : "mr-3"}`} 
+              onError={(e) => {
+                e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23004AAD"/><text x="50" y="50" font-family="Arial" font-size="40" fill="white" text-anchor="middle" dy=".3em">AI</text></svg>';
+              }}
+            />
+            <div className="flex flex-col">
+              <CardTitle className="text-2xl font-bold text-security-800 dark:text-security-200">AI SECURITY</CardTitle>
+              <span className="text-xs text-muted-foreground">Version 1.0 (Beta)</span>
+            </div>
           </div>
           <div className="flex justify-end absolute top-4 right-4">
             <ThemeLanguageSwitcher />
@@ -61,6 +73,9 @@ export default function Login() {
               Email : <span className="select-all">client@example.com</span> <br />
               Mot de passe : <span className="italic">au choix</span>
             </span>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded px-4 py-2 text-sm text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-800 dark:text-yellow-200">
+            Cette version est une démonstration (AI_SECURITY_V1) destinée aux tests.
           </div>
           <h2 className="font-semibold text-lg text-gray-900 text-center mb-2 dark:text-gray-100">
             Connexion Sécurisée
