@@ -12,7 +12,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Cameras from "./pages/Cameras";
-import CameraDetail from "./pages/CameraDetail"; // Importation de la nouvelle page
+import CameraDetail from "./pages/CameraDetail";
 import Alerts from "./pages/Alerts";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";

@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -46,6 +47,7 @@ export function Sidebar() {
   const { t } = useThemeLanguage();
 
   const isActive = (path: string) => location.pathname === path;
+  const pathname = location.pathname; // Added this line to define pathname
 
   return (
     <div className="flex flex-col h-full w-64 bg-security-950 text-white">
