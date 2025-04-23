@@ -18,6 +18,7 @@ import { useToast } from "../hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
+import { CameraConfigDialog } from "@/components/CameraConfigDialog";
 
 const statusColors: Record<string, string> = {
   online: "bg-green-500",
@@ -30,6 +31,8 @@ export default function Cameras() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const { toast } = useToast();
   const { t } = useThemeLanguage();
 
@@ -48,15 +51,11 @@ export default function Cameras() {
         setLoading(false);
       }
     };
-
     loadCameras();
   }, [toast, t]);
 
   const filteredCameras = cameras.filter((camera) => {
-    if (filter !== "all" && camera.status !== filter) {
-      return false;
-    }
-    
+    if (filter !== "all" && camera.status !== filter) return false;
     if (
       searchTerm &&
       !camera.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -64,9 +63,20 @@ export default function Cameras() {
     ) {
       return false;
     }
-    
     return true;
   });
+
+  const handleUpdateCamera = (updated: Camera) => {
+    setCameras(prev =>
+      prev.map(cam => cam.id === updated.id ? updated : cam)
+    );
+    toast({ title: "Caméra modifiée", description: updated.name });
+  };
+
+  const handleDeleteCamera = (id: string) => {
+    setCameras(prev => prev.filter(cam => cam.id !== id));
+    toast({ title: "Caméra supprimée" });
+  };
 
   return (
     <AppLayout>
@@ -160,7 +170,16 @@ export default function Cameras() {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <Button size="sm" variant="outline">{t("configure")}</Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedCamera(camera);
+                            setConfigDialogOpen(true);
+                          }}
+                        >
+                          {t("configure")}
+                        </Button>
                         <Button size="sm" asChild>
                           <Link to={`/camera/${camera.id}`}>
                             {t("viewFeed")}
@@ -239,6 +258,13 @@ export default function Cameras() {
           </TabsContent>
         </Tabs>
       </div>
+      <CameraConfigDialog
+        camera={selectedCamera}
+        open={configDialogOpen}
+        onClose={() => setConfigDialogOpen(false)}
+        onSave={handleUpdateCamera}
+        onDelete={handleDeleteCamera}
+      />
     </AppLayout>
   );
 }
