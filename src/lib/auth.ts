@@ -1,4 +1,3 @@
-
 // Mock authentication service for demo purposes
 // In a real application, this would connect to a backend service
 
@@ -21,7 +20,7 @@ const USERS: User[] = [
   { 
     id: '2', 
     name: 'Client Demo', 
-    email: 'client@example.com', 
+    email: 'client@aisecurity.com', 
     role: 'client',
     assignedCameras: ['camera-1', 'camera-2'] 
   },
@@ -33,11 +32,21 @@ export function loginUser(email: string, password: string): Promise<User | null>
     setTimeout(() => {
       const user = USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
       
-      // In this demo, any password works for existing users
+      // Check for specific demo credentials
+      let isValid = false;
       if (user) {
+        if (user.email === 'admin@aisecurity.com' && password === 'admin') {
+          isValid = true;
+        } else if (user.email === 'client@aisecurity.com' && password === 'client321@') {
+          isValid = true;
+        }
+        // Add more checks here for other users if needed in a real scenario
+      }
+
+      if (isValid) {
         // Store user in session storage
         sessionStorage.setItem('currentUser', JSON.stringify(user));
-        resolve(user);
+        resolve(user!); // User is guaranteed to be non-null here
       } else {
         resolve(null);
       }

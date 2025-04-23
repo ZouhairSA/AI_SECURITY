@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -28,9 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, User } from "lucide-react";
+import { Plus, Search, User, Trash2, Edit } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
+import { ConfirmAction } from "@/components/ui/confirm-action";
 
 type UserType = {
   id: string;
@@ -66,6 +66,11 @@ export default function Users() {
   const [addEmail, setAddEmail] = useState("");
   const [addRole, setAddRole] = useState<"admin" | "client" | "">("");
   const [addPassword, setAddPassword] = useState("");
+
+  // Nouveaux états pour les confirmations
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [editConfirmOpen, setEditConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
 
   // Handle add user
   const handleAddUser = () => {
@@ -109,19 +114,22 @@ export default function Users() {
       )
     );
     setEditDialogOpen(false);
+    setEditConfirmOpen(false);
     setEditUser(null);
     toast({
-      title: "User updated",
-      description: "User information has been updated",
+      title: "Utilisateur modifié",
+      description: "Les informations de l'utilisateur ont été mises à jour",
     });
   };
 
   // Delete
   const handleDeleteUser = (userId: string) => {
     setUsers(users => users.filter(u => u.id !== userId));
+    setDeleteConfirmOpen(false);
+    setUserToDelete(null);
     toast({
-      title: "User deleted",
-      description: "User has been removed from the system",
+      title: "Utilisateur supprimé",
+      description: "L'utilisateur a été supprimé avec succès",
     });
   };
 
@@ -238,13 +246,23 @@ export default function Users() {
                       <span className="text-sm text-muted-foreground">All access</span>
                     )}
                   </div>
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-end gap-2">
                     <Dialog open={editDialogOpen && editUser?.id === user.id} onOpenChange={(open) => {
                       setEditDialogOpen(open);
                       if (!open) setEditUser(null);
                     }}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" onClick={() => handleEditUserOpen(user)}>{t("edit")}</Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            setEditUser(user);
+                            setEditConfirmOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          {t("edit")}
+                        </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -276,16 +294,27 @@ export default function Users() {
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="button" onClick={handleUpdateUser}>{t("save")}</Button>
+                          <Button 
+                            type="button" 
+                            onClick={() => {
+                              setEditConfirmOpen(true);
+                            }}
+                          >
+                            {t("save")}
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    
-                    <Button 
-                      variant="destructive" 
+
+                    <Button
+                      variant="destructive"
                       size="sm"
-                      onClick={() => handleDeleteUser(user.id)}
+                      onClick={() => {
+                        setUserToDelete(user);
+                        setDeleteConfirmOpen(true);
+                      }}
                     >
+                      <Trash2 className="h-4 w-4 mr-2" />
                       {t("delete")}
                     </Button>
                   </div>
@@ -294,6 +323,49 @@ export default function Users() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Dialogue de confirmation pour la suppression */}
+        <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmer la suppression</DialogTitle>
+              <DialogDescription>
+                Êtes-vous sûr de vouloir supprimer l'utilisateur {userToDelete?.name} ? Cette action est irréversible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+                Annuler
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => userToDelete && handleDeleteUser(userToDelete.id)}
+              >
+                Confirmer la suppression
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialogue de confirmation pour la modification */}
+        <Dialog open={editConfirmOpen} onOpenChange={setEditConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmer la modification</DialogTitle>
+              <DialogDescription>
+                Êtes-vous sûr de vouloir modifier les informations de l'utilisateur {editUser?.name} ?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditConfirmOpen(false)}>
+                Annuler
+              </Button>
+              <Button onClick={handleUpdateUser}>
+                Confirmer la modification
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
