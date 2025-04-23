@@ -10,7 +10,7 @@ export type User = {
 };
 
 // Mock users for demonstration
-const USERS: User[] = [
+export const USERS: User[] = [
   { 
     id: '1', 
     name: 'Admin User', 
@@ -23,6 +23,13 @@ const USERS: User[] = [
     email: 'client@aisecurity.com', 
     role: 'client',
     assignedCameras: ['camera-1', 'camera-2'] 
+  },
+  { 
+    id: '3', 
+    name: 'Zohair', 
+    email: 'zohair@aisecurity.com', 
+    role: 'client',
+    assignedCameras: [] // Initialement aucune caméra assignée
   },
 ];
 

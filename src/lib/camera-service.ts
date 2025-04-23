@@ -1,5 +1,4 @@
-
-import { getCurrentUser, isAdmin } from "./auth";
+import { getCurrentUser, isAdmin, USERS } from "./auth";
 
 export type Camera = {
   id: string;
@@ -222,5 +221,78 @@ export function updateAlertStatus(alertId: string, status: "acknowledged" | "res
         resolve(false);
       }
     }, 300);
+  });
+}
+
+// Assign a camera to a user
+export function assignCameraToUser(cameraId: string, userId: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser || !isAdmin()) {
+        resolve(false);
+        return;
+      }
+      
+      // Find the user
+      const user = USERS.find(u => u.id === userId);
+      if (!user) {
+        resolve(false);
+        return;
+      }
+      
+      // Find the camera
+      const camera = CAMERAS.find(c => c.id === cameraId);
+      if (!camera) {
+        resolve(false);
+        return;
+      }
+      
+      // Add camera to user's assigned cameras
+      if (!user.assignedCameras) {
+        user.assignedCameras = [];
+      }
+      
+      if (!user.assignedCameras.includes(cameraId)) {
+        user.assignedCameras.push(cameraId);
+      }
+      
+      resolve(true);
+    }, 300);
+  });
+}
+
+// Add a new camera
+export function addCamera(cameraData: Omit<Camera, 'id' | 'status'>): Promise<Camera | null> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const currentUser = getCurrentUser();
+      
+      // Only admins can add cameras
+      if (!currentUser || !isAdmin()) {
+        console.error("Permission denied: Only admins can add cameras.");
+        resolve(null);
+        return;
+      }
+
+      // Check if the specified client exists
+      const clientExists = USERS.some(user => user.id === cameraData.clientId && user.role === 'client');
+      if (!clientExists) {
+        console.error(`Client with ID ${cameraData.clientId} not found or is not a client.`);
+        resolve(null);
+        return;
+      }
+
+      const newCamera: Camera = {
+        ...cameraData,
+        id: `camera-${Date.now()}`, // Simple unique ID generation
+        status: "offline", // Default status for new cameras
+      };
+
+      CAMERAS.push(newCamera);
+      console.log("New camera added:", newCamera);
+      resolve(newCamera);
+    }, 400); // Simulate network delay
   });
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +21,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { useThemeLanguage } from "../contexts/ThemeLanguageContext";
 import { CameraConfigDialog } from "@/components/CameraConfigDialog";
+import { AddCameraForm } from "@/components/AddCameraForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { useAuth } from "../contexts/AuthContext";
 
 const statusColors: Record<string, string> = {
   online: "bg-green-500",
@@ -33,8 +46,10 @@ export default function Cameras() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
   const { t } = useThemeLanguage();
+  const { user, isAdmin } = useAuth();
 
   useEffect(() => {
     const loadCameras = async () => {
@@ -66,6 +81,19 @@ export default function Cameras() {
     return true;
   });
 
+  const handleCameraAdded = (newCamera: Camera) => {
+    setCameras(prevCameras => [...prevCameras, newCamera]);
+    setShowAddForm(false);
+    toast({
+      title: t("cameraAddedSuccessfully"),
+      description: `${newCamera.name} (${newCamera.location})`,
+    });
+  };
+
+  const handleCancelAdd = () => {
+    setShowAddForm(false);
+  };
+
   const handleUpdateCamera = (updated: Camera) => {
     setCameras(prev =>
       prev.map(cam => cam.id === updated.id ? updated : cam)
@@ -88,9 +116,23 @@ export default function Cameras() {
               {t("camerasDescription")}
             </p>
           </div>
-          <Button className="bg-security-800 hover:bg-security-700">
-            <Plus className="mr-2 h-4 w-4" /> {t("addCamera")}
-          </Button>
+          {isAdmin && (
+            <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+              <DialogTrigger asChild>
+                <Button className="bg-security-800 hover:bg-security-700">
+                  <Plus className="mr-2 h-4 w-4" /> {t("addCamera")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                </DialogHeader>
+                <AddCameraForm 
+                  onCameraAdded={handleCameraAdded} 
+                  onCancel={handleCancelAdd} 
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -170,16 +212,18 @@ export default function Cameras() {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedCamera(camera);
-                            setConfigDialogOpen(true);
-                          }}
-                        >
-                          {t("configure")}
-                        </Button>
+                        {isAdmin && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedCamera(camera);
+                              setConfigDialogOpen(true);
+                            }}
+                          >
+                            {t("configure")}
+                          </Button>
+                        )}
                         <Button size="sm" asChild>
                           <Link to={`/camera/${camera.id}`}>
                             {t("viewFeed")}
@@ -258,13 +302,15 @@ export default function Cameras() {
           </TabsContent>
         </Tabs>
       </div>
-      <CameraConfigDialog
-        camera={selectedCamera}
-        open={configDialogOpen}
-        onClose={() => setConfigDialogOpen(false)}
-        onSave={handleUpdateCamera}
-        onDelete={handleDeleteCamera}
-      />
+      {selectedCamera && isAdmin && (
+        <CameraConfigDialog 
+          open={configDialogOpen} 
+          onClose={() => setConfigDialogOpen(false)}
+          camera={selectedCamera} 
+          onSave={handleUpdateCamera}
+          onDelete={handleDeleteCamera}
+        />
+      )}
     </AppLayout>
   );
 }
