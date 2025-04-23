@@ -1,9 +1,8 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeLanguageProvider } from "./contexts/ThemeLanguageContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -26,7 +25,7 @@ const App = () => (
       <ThemeLanguageProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <HashRouter>
           <AuthProvider>
             <Routes>
               {/* Public routes */}
@@ -69,7 +68,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
-        </BrowserRouter>
+        </HashRouter>
       </ThemeLanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
