@@ -9,8 +9,8 @@ export function Footer() {
         <span>2025 SABYOUD ZOHAIR</span>
       </div>
       <div className="flex items-center space-x-4 mt-1 md:mt-0">
-        <span className="flex items-center"><Info className="h-3 w-3 mr-1" /> Vidéosurveillance et alertes temps réel</span>
-        <span className="flex items-center"><Info className="h-3 w-3 mr-1" /> Pour tous les administrateurs et utilisateurs</span>
+        <span className="flex items-center"><Info className="h-3 w-3 mr-1" /> Security Monitoring System</span>
+        <span className="flex items-center"><Info className="h-3 w-3 mr-1" /> Real-time Video Surveillance</span>
       </div>
     </footer>
   );
