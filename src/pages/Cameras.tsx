@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,12 +53,10 @@ export default function Cameras() {
   }, [toast, t]);
 
   const filteredCameras = cameras.filter((camera) => {
-    // Apply status filter
     if (filter !== "all" && camera.status !== filter) {
       return false;
     }
     
-    // Apply search filter
     if (
       searchTerm &&
       !camera.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -164,12 +161,10 @@ export default function Cameras() {
                       </div>
                       <div className="flex justify-between">
                         <Button size="sm" variant="outline">{t("configure")}</Button>
-                        <Button 
-                          size="sm"
-                          as={Link} 
-                          to={`/camera/${camera.id}`}
-                        >
-                          {t("viewFeed")}
+                        <Button size="sm" asChild>
+                          <Link to={`/camera/${camera.id}`}>
+                            {t("viewFeed")}
+                          </Link>
                         </Button>
                       </div>
                     </CardContent>
@@ -231,12 +226,10 @@ export default function Cameras() {
                       )}
                     </div>
                     <div className="text-right">
-                      <Button 
-                        size="sm"
-                        as={Link} 
-                        to={`/camera/${camera.id}`}
-                      >
-                        {t("view")}
+                      <Button size="sm" asChild>
+                        <Link to={`/camera/${camera.id}`}>
+                          {t("view")}
+                        </Link>
                       </Button>
                     </div>
                   </div>
