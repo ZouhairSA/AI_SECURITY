@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,8 @@ export function CameraConfigDialog({ camera, open, onClose, onSave, onDelete }: 
   const [location, setLocation] = useState(camera?.location || "");
   const [streamUrl, setStreamUrl] = useState(camera?.streamUrl || "");
 
-  // Met à jour l'état local si une nouvelle caméra arrive en props
-  React.useEffect(() => {
+  // Update local state when a new camera is provided
+  useEffect(() => {
     setName(camera?.name || "");
     setLocation(camera?.location || "");
     setStreamUrl(camera?.streamUrl || "");
